@@ -1,0 +1,100 @@
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
+import { useMemo, useState } from "react";
+import { Zap, Search } from "lucide-react";
+import { SiteLayout } from "@/components/layout/SiteLayout";
+import { Input } from "@/components/ui/input";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { listPublicBundles, listMyBundles } from "@/lib/bundles.functions";
+import { useAuth } from "@/hooks/use-auth";
+
+export const Route = createFileRoute("/bundles")({
+  component: Bundles,
+  head: () => ({
+    meta: [
+      { title: "Bundles — Shmalltym Data Plug" },
+      { name: "description", content: "Browse all MTN, Telecel and AirtelTigo data bundles. Filter by network and pay securely." },
+    ],
+  }),
+});
+
+function Bundles() {
+  const { user } = useAuth();
+  const { data: bundles } = useQuery({
+    queryKey: ["bundles", user?.id ?? "public"],
+    queryFn: () => (user ? listMyBundles() : listPublicBundles()),
+  });
+  const [net, setNet] = useState<string>("all");
+  const [q, setQ] = useState("");
+
+  const networks = useMemo(() => {
+    const s = new Set((bundles ?? []).map((b) => `${b.network_code}|${b.network_name}`));
+    return Array.from(s).map((s) => { const [code, name] = s.split("|"); return { code, name }; });
+  }, [bundles]);
+
+  const filtered = (bundles ?? []).filter((b) =>
+    (net === "all" || b.network_code === net) &&
+    (q.length === 0 || b.label.toLowerCase().includes(q.toLowerCase()))
+  );
+
+  return (
+    <SiteLayout>
+      <section className="border-b border-border bg-primary text-primary-foreground">
+        <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6">
+          <h1 className="font-display text-4xl font-bold">All bundles</h1>
+          <p className="mt-2 text-primary-foreground/70">{user ? "Prices reflect your tier." : "Sign in for reseller/agent pricing."}</p>
+        </div>
+      </section>
+      <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-wrap gap-2">
+            <Button variant={net === "all" ? "default" : "outline"} size="sm" onClick={() => setNet("all")}>All</Button>
+            {networks.map((n) => (
+              <Button key={n.code} variant={net === n.code ? "default" : "outline"} size="sm" onClick={() => setNet(n.code)}>
+                {n.name}
+              </Button>
+            ))}
+          </div>
+          <div className="relative sm:w-72">
+            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Input placeholder="Search size, e.g. 5GB" value={q} onChange={(e) => setQ(e.target.value)} className="pl-9" />
+          </div>
+        </div>
+
+        <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {filtered.map((b) => (
+            <Card key={b.id} className="flex flex-col p-5">
+              <div className="flex items-center gap-3">
+                <span className="grid h-10 w-10 place-items-center rounded-lg" style={{ background: b.network_color ?? "#FFCC00" }}>
+                  <Zap className="h-5 w-5 text-foreground" />
+                </span>
+                <div>
+                  <div className="text-xs uppercase tracking-wide text-muted-foreground">{b.network_name}</div>
+                  <div className="font-display text-lg font-semibold">{b.label}</div>
+                </div>
+              </div>
+              <div className="mt-4 flex items-end justify-between">
+                <div>
+                  <div className="font-display text-2xl font-bold text-primary">GH₵{b.price.toFixed(2)}</div>
+                  <div className="text-xs text-muted-foreground">{b.validity}</div>
+                </div>
+                {user && b.price < b.base_price && (
+                  <div className="text-xs text-muted-foreground line-through">GH₵{b.base_price.toFixed(2)}</div>
+                )}
+              </div>
+              <Button asChild className="mt-5">
+                <Link to="/checkout" search={{ bundle: b.id }}>Buy now</Link>
+              </Button>
+            </Card>
+          ))}
+          {filtered.length === 0 && (
+            <div className="col-span-full rounded-xl border border-dashed border-border p-12 text-center text-muted-foreground">
+              No bundles match.
+            </div>
+          )}
+        </div>
+      </section>
+    </SiteLayout>
+  );
+}

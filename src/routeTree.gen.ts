@@ -9,38 +9,419 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SignupRouteImport } from './routes/signup'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as FaqRouteImport } from './routes/faq'
+import { Route as ContactRouteImport } from './routes/contact'
+import { Route as CheckoutRouteImport } from './routes/checkout'
+import { Route as BundlesRouteImport } from './routes/bundles'
+import { Route as BecomeAgentRouteImport } from './routes/become-agent'
+import { Route as AboutRouteImport } from './routes/about'
+import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as TrackIndexRouteImport } from './routes/track.index'
+import { Route as TrackOrderIdRouteImport } from './routes/track.$orderId'
+import { Route as StoreSlugRouteImport } from './routes/store.$slug'
+import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
+import { Route as AuthenticatedAccountRouteImport } from './routes/_authenticated/account'
+import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin/index'
+import { Route as ApiPublicPaystackWebhookRouteImport } from './routes/api/public/paystack-webhook'
+import { Route as AuthenticatedDashboardWalletRouteImport } from './routes/_authenticated/dashboard_.wallet'
+import { Route as AuthenticatedDashboardStoreRouteImport } from './routes/_authenticated/dashboard_.store'
+import { Route as AuthenticatedDashboardOrdersRouteImport } from './routes/_authenticated/dashboard_.orders'
+import { Route as AuthenticatedAdminUsersRouteImport } from './routes/_authenticated/admin/users'
+import { Route as AuthenticatedAdminPricingRouteImport } from './routes/_authenticated/admin/pricing'
+import { Route as AuthenticatedAdminPaymentsRouteImport } from './routes/_authenticated/admin/payments'
+import { Route as AuthenticatedAdminOrdersRouteImport } from './routes/_authenticated/admin/orders'
+import { Route as AuthenticatedAdminBundlesRouteImport } from './routes/_authenticated/admin/bundles'
 
+const SignupRoute = SignupRouteImport.update({
+  id: '/signup',
+  path: '/signup',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FaqRoute = FaqRouteImport.update({
+  id: '/faq',
+  path: '/faq',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContactRoute = ContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CheckoutRoute = CheckoutRouteImport.update({
+  id: '/checkout',
+  path: '/checkout',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BundlesRoute = BundlesRouteImport.update({
+  id: '/bundles',
+  path: '/bundles',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BecomeAgentRoute = BecomeAgentRouteImport.update({
+  id: '/become-agent',
+  path: '/become-agent',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AboutRoute = AboutRouteImport.update({
+  id: '/about',
+  path: '/about',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedRoute = AuthenticatedRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TrackIndexRoute = TrackIndexRouteImport.update({
+  id: '/track/',
+  path: '/track/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TrackOrderIdRoute = TrackOrderIdRouteImport.update({
+  id: '/track/$orderId',
+  path: '/track/$orderId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StoreSlugRoute = StoreSlugRouteImport.update({
+  id: '/store/$slug',
+  path: '/store/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedAccountRoute = AuthenticatedAccountRouteImport.update({
+  id: '/account',
+  path: '/account',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AuthenticatedAdminRoute,
+} as any)
+const ApiPublicPaystackWebhookRoute =
+  ApiPublicPaystackWebhookRouteImport.update({
+    id: '/api/public/paystack-webhook',
+    path: '/api/public/paystack-webhook',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const AuthenticatedDashboardWalletRoute =
+  AuthenticatedDashboardWalletRouteImport.update({
+    id: '/dashboard_/wallet',
+    path: '/dashboard/wallet',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedDashboardStoreRoute =
+  AuthenticatedDashboardStoreRouteImport.update({
+    id: '/dashboard_/store',
+    path: '/dashboard/store',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedDashboardOrdersRoute =
+  AuthenticatedDashboardOrdersRouteImport.update({
+    id: '/dashboard_/orders',
+    path: '/dashboard/orders',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedAdminUsersRoute = AuthenticatedAdminUsersRouteImport.update({
+  id: '/users',
+  path: '/users',
+  getParentRoute: () => AuthenticatedAdminRoute,
+} as any)
+const AuthenticatedAdminPricingRoute =
+  AuthenticatedAdminPricingRouteImport.update({
+    id: '/pricing',
+    path: '/pricing',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminPaymentsRoute =
+  AuthenticatedAdminPaymentsRouteImport.update({
+    id: '/payments',
+    path: '/payments',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminOrdersRoute =
+  AuthenticatedAdminOrdersRouteImport.update({
+    id: '/orders',
+    path: '/orders',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminBundlesRoute =
+  AuthenticatedAdminBundlesRouteImport.update({
+    id: '/bundles',
+    path: '/bundles',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/become-agent': typeof BecomeAgentRoute
+  '/bundles': typeof BundlesRoute
+  '/checkout': typeof CheckoutRoute
+  '/contact': typeof ContactRoute
+  '/faq': typeof FaqRoute
+  '/login': typeof LoginRoute
+  '/signup': typeof SignupRoute
+  '/account': typeof AuthenticatedAccountRoute
+  '/admin': typeof AuthenticatedAdminRouteWithChildren
+  '/dashboard': typeof AuthenticatedDashboardRoute
+  '/store/$slug': typeof StoreSlugRoute
+  '/track/$orderId': typeof TrackOrderIdRoute
+  '/track/': typeof TrackIndexRoute
+  '/admin/bundles': typeof AuthenticatedAdminBundlesRoute
+  '/admin/orders': typeof AuthenticatedAdminOrdersRoute
+  '/admin/payments': typeof AuthenticatedAdminPaymentsRoute
+  '/admin/pricing': typeof AuthenticatedAdminPricingRoute
+  '/admin/users': typeof AuthenticatedAdminUsersRoute
+  '/dashboard/orders': typeof AuthenticatedDashboardOrdersRoute
+  '/dashboard/store': typeof AuthenticatedDashboardStoreRoute
+  '/dashboard/wallet': typeof AuthenticatedDashboardWalletRoute
+  '/api/public/paystack-webhook': typeof ApiPublicPaystackWebhookRoute
+  '/admin/': typeof AuthenticatedAdminIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/become-agent': typeof BecomeAgentRoute
+  '/bundles': typeof BundlesRoute
+  '/checkout': typeof CheckoutRoute
+  '/contact': typeof ContactRoute
+  '/faq': typeof FaqRoute
+  '/login': typeof LoginRoute
+  '/signup': typeof SignupRoute
+  '/account': typeof AuthenticatedAccountRoute
+  '/dashboard': typeof AuthenticatedDashboardRoute
+  '/store/$slug': typeof StoreSlugRoute
+  '/track/$orderId': typeof TrackOrderIdRoute
+  '/track': typeof TrackIndexRoute
+  '/admin/bundles': typeof AuthenticatedAdminBundlesRoute
+  '/admin/orders': typeof AuthenticatedAdminOrdersRoute
+  '/admin/payments': typeof AuthenticatedAdminPaymentsRoute
+  '/admin/pricing': typeof AuthenticatedAdminPricingRoute
+  '/admin/users': typeof AuthenticatedAdminUsersRoute
+  '/dashboard/orders': typeof AuthenticatedDashboardOrdersRoute
+  '/dashboard/store': typeof AuthenticatedDashboardStoreRoute
+  '/dashboard/wallet': typeof AuthenticatedDashboardWalletRoute
+  '/api/public/paystack-webhook': typeof ApiPublicPaystackWebhookRoute
+  '/admin': typeof AuthenticatedAdminIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteWithChildren
+  '/about': typeof AboutRoute
+  '/become-agent': typeof BecomeAgentRoute
+  '/bundles': typeof BundlesRoute
+  '/checkout': typeof CheckoutRoute
+  '/contact': typeof ContactRoute
+  '/faq': typeof FaqRoute
+  '/login': typeof LoginRoute
+  '/signup': typeof SignupRoute
+  '/_authenticated/account': typeof AuthenticatedAccountRoute
+  '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
+  '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/store/$slug': typeof StoreSlugRoute
+  '/track/$orderId': typeof TrackOrderIdRoute
+  '/track/': typeof TrackIndexRoute
+  '/_authenticated/admin/bundles': typeof AuthenticatedAdminBundlesRoute
+  '/_authenticated/admin/orders': typeof AuthenticatedAdminOrdersRoute
+  '/_authenticated/admin/payments': typeof AuthenticatedAdminPaymentsRoute
+  '/_authenticated/admin/pricing': typeof AuthenticatedAdminPricingRoute
+  '/_authenticated/admin/users': typeof AuthenticatedAdminUsersRoute
+  '/_authenticated/dashboard_/orders': typeof AuthenticatedDashboardOrdersRoute
+  '/_authenticated/dashboard_/store': typeof AuthenticatedDashboardStoreRoute
+  '/_authenticated/dashboard_/wallet': typeof AuthenticatedDashboardWalletRoute
+  '/api/public/paystack-webhook': typeof ApiPublicPaystackWebhookRoute
+  '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/about'
+    | '/become-agent'
+    | '/bundles'
+    | '/checkout'
+    | '/contact'
+    | '/faq'
+    | '/login'
+    | '/signup'
+    | '/account'
+    | '/admin'
+    | '/dashboard'
+    | '/store/$slug'
+    | '/track/$orderId'
+    | '/track/'
+    | '/admin/bundles'
+    | '/admin/orders'
+    | '/admin/payments'
+    | '/admin/pricing'
+    | '/admin/users'
+    | '/dashboard/orders'
+    | '/dashboard/store'
+    | '/dashboard/wallet'
+    | '/api/public/paystack-webhook'
+    | '/admin/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/about'
+    | '/become-agent'
+    | '/bundles'
+    | '/checkout'
+    | '/contact'
+    | '/faq'
+    | '/login'
+    | '/signup'
+    | '/account'
+    | '/dashboard'
+    | '/store/$slug'
+    | '/track/$orderId'
+    | '/track'
+    | '/admin/bundles'
+    | '/admin/orders'
+    | '/admin/payments'
+    | '/admin/pricing'
+    | '/admin/users'
+    | '/dashboard/orders'
+    | '/dashboard/store'
+    | '/dashboard/wallet'
+    | '/api/public/paystack-webhook'
+    | '/admin'
+  id:
+    | '__root__'
+    | '/'
+    | '/_authenticated'
+    | '/about'
+    | '/become-agent'
+    | '/bundles'
+    | '/checkout'
+    | '/contact'
+    | '/faq'
+    | '/login'
+    | '/signup'
+    | '/_authenticated/account'
+    | '/_authenticated/admin'
+    | '/_authenticated/dashboard'
+    | '/store/$slug'
+    | '/track/$orderId'
+    | '/track/'
+    | '/_authenticated/admin/bundles'
+    | '/_authenticated/admin/orders'
+    | '/_authenticated/admin/payments'
+    | '/_authenticated/admin/pricing'
+    | '/_authenticated/admin/users'
+    | '/_authenticated/dashboard_/orders'
+    | '/_authenticated/dashboard_/store'
+    | '/_authenticated/dashboard_/wallet'
+    | '/api/public/paystack-webhook'
+    | '/_authenticated/admin/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
+  AboutRoute: typeof AboutRoute
+  BecomeAgentRoute: typeof BecomeAgentRoute
+  BundlesRoute: typeof BundlesRoute
+  CheckoutRoute: typeof CheckoutRoute
+  ContactRoute: typeof ContactRoute
+  FaqRoute: typeof FaqRoute
+  LoginRoute: typeof LoginRoute
+  SignupRoute: typeof SignupRoute
+  StoreSlugRoute: typeof StoreSlugRoute
+  TrackOrderIdRoute: typeof TrackOrderIdRoute
+  TrackIndexRoute: typeof TrackIndexRoute
+  ApiPublicPaystackWebhookRoute: typeof ApiPublicPaystackWebhookRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/signup': {
+      id: '/signup'
+      path: '/signup'
+      fullPath: '/signup'
+      preLoaderRoute: typeof SignupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/faq': {
+      id: '/faq'
+      path: '/faq'
+      fullPath: '/faq'
+      preLoaderRoute: typeof FaqRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/contact': {
+      id: '/contact'
+      path: '/contact'
+      fullPath: '/contact'
+      preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/checkout': {
+      id: '/checkout'
+      path: '/checkout'
+      fullPath: '/checkout'
+      preLoaderRoute: typeof CheckoutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/bundles': {
+      id: '/bundles'
+      path: '/bundles'
+      fullPath: '/bundles'
+      preLoaderRoute: typeof BundlesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/become-agent': {
+      id: '/become-agent'
+      path: '/become-agent'
+      fullPath: '/become-agent'
+      preLoaderRoute: typeof BecomeAgentRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/about': {
+      id: '/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof AboutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,11 +429,179 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/track/': {
+      id: '/track/'
+      path: '/track'
+      fullPath: '/track/'
+      preLoaderRoute: typeof TrackIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/track/$orderId': {
+      id: '/track/$orderId'
+      path: '/track/$orderId'
+      fullPath: '/track/$orderId'
+      preLoaderRoute: typeof TrackOrderIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/store/$slug': {
+      id: '/store/$slug'
+      path: '/store/$slug'
+      fullPath: '/store/$slug'
+      preLoaderRoute: typeof StoreSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/dashboard': {
+      id: '/_authenticated/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof AuthenticatedDashboardRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/admin': {
+      id: '/_authenticated/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AuthenticatedAdminRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/account': {
+      id: '/_authenticated/account'
+      path: '/account'
+      fullPath: '/account'
+      preLoaderRoute: typeof AuthenticatedAccountRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/admin/': {
+      id: '/_authenticated/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AuthenticatedAdminIndexRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/api/public/paystack-webhook': {
+      id: '/api/public/paystack-webhook'
+      path: '/api/public/paystack-webhook'
+      fullPath: '/api/public/paystack-webhook'
+      preLoaderRoute: typeof ApiPublicPaystackWebhookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/dashboard_/wallet': {
+      id: '/_authenticated/dashboard_/wallet'
+      path: '/dashboard/wallet'
+      fullPath: '/dashboard/wallet'
+      preLoaderRoute: typeof AuthenticatedDashboardWalletRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/dashboard_/store': {
+      id: '/_authenticated/dashboard_/store'
+      path: '/dashboard/store'
+      fullPath: '/dashboard/store'
+      preLoaderRoute: typeof AuthenticatedDashboardStoreRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/dashboard_/orders': {
+      id: '/_authenticated/dashboard_/orders'
+      path: '/dashboard/orders'
+      fullPath: '/dashboard/orders'
+      preLoaderRoute: typeof AuthenticatedDashboardOrdersRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/admin/users': {
+      id: '/_authenticated/admin/users'
+      path: '/users'
+      fullPath: '/admin/users'
+      preLoaderRoute: typeof AuthenticatedAdminUsersRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/pricing': {
+      id: '/_authenticated/admin/pricing'
+      path: '/pricing'
+      fullPath: '/admin/pricing'
+      preLoaderRoute: typeof AuthenticatedAdminPricingRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/payments': {
+      id: '/_authenticated/admin/payments'
+      path: '/payments'
+      fullPath: '/admin/payments'
+      preLoaderRoute: typeof AuthenticatedAdminPaymentsRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/orders': {
+      id: '/_authenticated/admin/orders'
+      path: '/orders'
+      fullPath: '/admin/orders'
+      preLoaderRoute: typeof AuthenticatedAdminOrdersRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/bundles': {
+      id: '/_authenticated/admin/bundles'
+      path: '/bundles'
+      fullPath: '/admin/bundles'
+      preLoaderRoute: typeof AuthenticatedAdminBundlesRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
   }
 }
 
+interface AuthenticatedAdminRouteChildren {
+  AuthenticatedAdminBundlesRoute: typeof AuthenticatedAdminBundlesRoute
+  AuthenticatedAdminOrdersRoute: typeof AuthenticatedAdminOrdersRoute
+  AuthenticatedAdminPaymentsRoute: typeof AuthenticatedAdminPaymentsRoute
+  AuthenticatedAdminPricingRoute: typeof AuthenticatedAdminPricingRoute
+  AuthenticatedAdminUsersRoute: typeof AuthenticatedAdminUsersRoute
+  AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
+}
+
+const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
+  AuthenticatedAdminBundlesRoute: AuthenticatedAdminBundlesRoute,
+  AuthenticatedAdminOrdersRoute: AuthenticatedAdminOrdersRoute,
+  AuthenticatedAdminPaymentsRoute: AuthenticatedAdminPaymentsRoute,
+  AuthenticatedAdminPricingRoute: AuthenticatedAdminPricingRoute,
+  AuthenticatedAdminUsersRoute: AuthenticatedAdminUsersRoute,
+  AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
+}
+
+const AuthenticatedAdminRouteWithChildren =
+  AuthenticatedAdminRoute._addFileChildren(AuthenticatedAdminRouteChildren)
+
+interface AuthenticatedRouteChildren {
+  AuthenticatedAccountRoute: typeof AuthenticatedAccountRoute
+  AuthenticatedAdminRoute: typeof AuthenticatedAdminRouteWithChildren
+  AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedDashboardOrdersRoute: typeof AuthenticatedDashboardOrdersRoute
+  AuthenticatedDashboardStoreRoute: typeof AuthenticatedDashboardStoreRoute
+  AuthenticatedDashboardWalletRoute: typeof AuthenticatedDashboardWalletRoute
+}
+
+const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
+  AuthenticatedAccountRoute: AuthenticatedAccountRoute,
+  AuthenticatedAdminRoute: AuthenticatedAdminRouteWithChildren,
+  AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedDashboardOrdersRoute: AuthenticatedDashboardOrdersRoute,
+  AuthenticatedDashboardStoreRoute: AuthenticatedDashboardStoreRoute,
+  AuthenticatedDashboardWalletRoute: AuthenticatedDashboardWalletRoute,
+}
+
+const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
+  AuthenticatedRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRoute: AuthenticatedRouteWithChildren,
+  AboutRoute: AboutRoute,
+  BecomeAgentRoute: BecomeAgentRoute,
+  BundlesRoute: BundlesRoute,
+  CheckoutRoute: CheckoutRoute,
+  ContactRoute: ContactRoute,
+  FaqRoute: FaqRoute,
+  LoginRoute: LoginRoute,
+  SignupRoute: SignupRoute,
+  StoreSlugRoute: StoreSlugRoute,
+  TrackOrderIdRoute: TrackOrderIdRoute,
+  TrackIndexRoute: TrackIndexRoute,
+  ApiPublicPaystackWebhookRoute: ApiPublicPaystackWebhookRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
