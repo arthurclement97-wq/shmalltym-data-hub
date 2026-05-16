@@ -43,10 +43,13 @@ export const adminUpdateOrderStatus = createServerFn({ method: "POST" })
   }).parse(d))
   .handler(async ({ data, context }) => {
     await assertAdmin(context.userId);
-    const patch: Record<string, unknown> = { status: data.status };
-    if (data.status === "paid") patch.paid_at = new Date().toISOString();
-    if (data.status === "completed") patch.completed_at = new Date().toISOString();
-    if (data.status === "cancelled") patch.cancelled_at = new Date().toISOString();
+    const now = new Date().toISOString();
+    const patch = {
+      status: data.status,
+      paid_at: data.status === "paid" ? now : undefined,
+      completed_at: data.status === "completed" ? now : undefined,
+      cancelled_at: data.status === "cancelled" ? now : undefined,
+    };
     const { error } = await supabaseAdmin.from("orders").update(patch).eq("id", data.orderId);
     if (error) throw new Error(error.message);
     await supabaseAdmin.from("order_events").insert({ order_id: data.orderId, status: data.status, note: data.note ?? `Admin set ${data.status}` });
