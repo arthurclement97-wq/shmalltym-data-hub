@@ -38,6 +38,18 @@ function Bundles() {
     (q.length === 0 || b.label.toLowerCase().includes(q.toLowerCase()))
   );
 
+  // Group by network, sorted by size within each group
+  const grouped = useMemo(() => {
+    const map = new Map<string, { name: string; code: string; color: string | null; items: typeof filtered }>();
+    for (const b of filtered) {
+      const key = b.network_code;
+      if (!map.has(key)) map.set(key, { name: b.network_name, code: b.network_code, color: b.network_color, items: [] });
+      map.get(key)!.items.push(b);
+    }
+    for (const g of map.values()) g.items.sort((a, b) => a.size_mb - b.size_mb);
+    return Array.from(map.values());
+  }, [filtered]);
+
   return (
     <SiteLayout>
       <section className="border-b border-border bg-primary text-primary-foreground">
@@ -62,34 +74,39 @@ function Bundles() {
           </div>
         </div>
 
-        <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {filtered.map((b) => (
-            <Card key={b.id} className="flex flex-col p-5">
-              <div className="flex items-center gap-3">
-                <span className="grid h-10 w-10 place-items-center rounded-lg" style={{ background: b.network_color ?? "#FFCC00" }}>
+        <div className="mt-8 space-y-10">
+          {grouped.map((g) => (
+            <div key={g.code}>
+              <div className="mb-4 flex items-center gap-3">
+                <span className="grid h-9 w-9 place-items-center rounded-lg" style={{ background: g.color ?? "#FFCC00" }}>
                   <Zap className="h-5 w-5 text-foreground" />
                 </span>
-                <div>
-                  <div className="text-xs uppercase tracking-wide text-muted-foreground">{b.network_name}</div>
-                  <div className="font-display text-lg font-semibold">{b.label}</div>
-                </div>
+                <h2 className="font-display text-2xl font-bold">{g.name}</h2>
+                <span className="text-xs text-muted-foreground">{g.items.length} bundles</span>
               </div>
-              <div className="mt-4 flex items-end justify-between">
-                <div>
-                  <div className="font-display text-2xl font-bold text-primary">GH₵{b.price.toFixed(2)}</div>
-                  <div className="text-xs text-muted-foreground">{b.validity}</div>
-                </div>
-                {user && b.price < b.base_price && (
-                  <div className="text-xs text-muted-foreground line-through">GH₵{b.base_price.toFixed(2)}</div>
-                )}
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                {g.items.map((b) => (
+                  <Card key={b.id} className="flex flex-col p-5">
+                    <div className="flex items-center justify-between">
+                      <div className="font-display text-lg font-semibold">{b.label}</div>
+                      <div className="text-xs text-muted-foreground">{b.validity}</div>
+                    </div>
+                    <div className="mt-4 flex items-end justify-between">
+                      <div className="font-display text-2xl font-bold text-primary">GH₵{b.price.toFixed(2)}</div>
+                      {user && b.price < b.base_price && (
+                        <div className="text-xs text-muted-foreground line-through">GH₵{b.base_price.toFixed(2)}</div>
+                      )}
+                    </div>
+                    <Button asChild className="mt-5">
+                      <Link to="/checkout" search={{ bundle: b.id }}>Buy now</Link>
+                    </Button>
+                  </Card>
+                ))}
               </div>
-              <Button asChild className="mt-5">
-                <Link to="/checkout" search={{ bundle: b.id }}>Buy now</Link>
-              </Button>
-            </Card>
+            </div>
           ))}
-          {filtered.length === 0 && (
-            <div className="col-span-full rounded-xl border border-dashed border-border p-12 text-center text-muted-foreground">
+          {grouped.length === 0 && (
+            <div className="rounded-xl border border-dashed border-border p-12 text-center text-muted-foreground">
               No bundles match.
             </div>
           )}
