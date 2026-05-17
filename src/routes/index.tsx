@@ -1,11 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { ArrowRight, Zap, ShieldCheck, Wallet, Store, Phone, Clock } from "lucide-react";
+import { ArrowRight, Zap, ShieldCheck, Wallet, Store, Phone, Clock, MessageCircle } from "lucide-react";
 import { SiteLayout } from "@/components/layout/SiteLayout";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { listPublicBundles } from "@/lib/bundles.functions";
+import { WHATSAPP_GROUP_URL } from "@/lib/contact";
 
 export const Route = createFileRoute("/")({
   component: Home,
@@ -22,9 +23,23 @@ function Home() {
     queryKey: ["public-bundles"],
     queryFn: () => listPublicBundles(),
   });
-  const popular = (bundles ?? [])
-    .filter((b) => b.network_code === "mtn")
-    .slice(0, 4);
+
+  // Quick Order: top bundle from each network so all networks are visible
+  const quick = (() => {
+    const groups = new Map<string, { code: string; name: string; color: string | null; items: typeof bundles }>();
+    for (const b of bundles ?? []) {
+      if (!groups.has(b.network_code)) groups.set(b.network_code, { code: b.network_code, name: b.network_name, color: b.network_color, items: [] as any });
+      groups.get(b.network_code)!.items!.push(b);
+    }
+    const out: NonNullable<typeof bundles> = [] as any;
+    for (const g of groups.values()) {
+      const sorted = g.items!.slice().sort((a, b) => a.size_mb - b.size_mb);
+      // Pick 1GB-ish (smallest >=1024MB), otherwise first
+      const pick = sorted.find((b) => b.size_mb >= 1024) ?? sorted[0];
+      if (pick) out.push(pick);
+    }
+    return out;
+  })();
 
   return (
     <SiteLayout>
