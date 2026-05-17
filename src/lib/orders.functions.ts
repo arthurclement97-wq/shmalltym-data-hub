@@ -175,8 +175,15 @@ export const initAgentSignup = createServerFn({ method: "POST" })
   }).parse(d))
   .handler(async ({ data, context }) => {
     const { data: profile } = await supabaseAdmin.from("profiles").select("email, signup_paid_at").eq("id", context.userId).maybeSingle();
+
+    // Reseller is FREE for every customer — assign role immediately, no payment.
+    if (data.tier === "reseller") {
+      await supabaseAdmin.from("user_roles").insert({ user_id: context.userId, role: "reseller" }).select();
+      return { alreadyPaid: true };
+    }
+
     if (profile?.signup_paid_at) {
-      // already paid — just upgrade
+      // already paid the one-time fee — just upgrade to agent
       await supabaseAdmin.from("user_roles").insert({ user_id: context.userId, role: data.tier }).select();
       if (data.tier === "agent" && data.slug) {
         await supabaseAdmin.from("profiles").update({

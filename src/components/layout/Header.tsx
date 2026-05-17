@@ -1,8 +1,9 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { Menu, X, Zap } from "lucide-react";
+import { Menu, X, Zap, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
+import { WHATSAPP_GROUP_URL } from "@/lib/contact";
 
 export function Header() {
   const [open, setOpen] = useState(false);
@@ -15,7 +16,8 @@ export function Header() {
   const nav = [
     { to: "/", label: "Home" },
     { to: "/bundles", label: "Bundles" },
-    { to: "/become-agent", label: "Become an Agent" },
+    // Hide "Become an Agent" once the user is already an agent
+    ...(!isAgent ? [{ to: "/become-agent", label: "Become an Agent" }] : []),
     { to: "/about", label: "About" },
     { to: "/contact", label: "Contact" },
   ];
