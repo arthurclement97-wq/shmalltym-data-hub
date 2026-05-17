@@ -26,6 +26,27 @@ export const updateMyProfile = createServerFn({ method: "POST" })
     return updated;
   });
 
+// Update email — uses admin to also keep auth.users + profiles in sync
+export const updateMyEmail = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) => z.object({ email: z.string().email().max(255) }).parse(d))
+  .handler(async ({ data, context }) => {
+    const { error } = await supabaseAdmin.auth.admin.updateUserById(context.userId, { email: data.email });
+    if (error) throw new Error(error.message);
+    await supabaseAdmin.from("profiles").update({ email: data.email }).eq("id", context.userId);
+    return { ok: true };
+  });
+
+// Update password
+export const updateMyPassword = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) => z.object({ password: z.string().min(8).max(128) }).parse(d))
+  .handler(async ({ data, context }) => {
+    const { error } = await supabaseAdmin.auth.admin.updateUserById(context.userId, { password: data.password });
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
 export const listMyWalletTransactions = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {

@@ -219,6 +219,27 @@ export const getOrderTracking = createServerFn({ method: "GET" })
     return { order, events: events ?? [] };
   });
 
+// Lookup orders by recipient phone + date (public — last 4 of order id required for privacy if many)
+export const findOrdersByPhone = createServerFn({ method: "POST" })
+  .inputValidator((d) => z.object({
+    recipientPhone: z.string().trim().min(7).max(20).regex(/^[0-9+ ]+$/),
+    date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/), // YYYY-MM-DD
+  }).parse(d))
+  .handler(async ({ data }) => {
+    const start = new Date(`${data.date}T00:00:00Z`).toISOString();
+    const end = new Date(`${data.date}T23:59:59.999Z`).toISOString();
+    const phone = data.recipientPhone.replace(/\s+/g, "");
+    const { data: orders } = await supabaseAdmin
+      .from("orders")
+      .select("id, recipient_phone, network_code, bundle_label, amount, status, created_at")
+      .eq("recipient_phone", phone)
+      .gte("created_at", start)
+      .lte("created_at", end)
+      .order("created_at", { ascending: false })
+      .limit(50);
+    return orders ?? [];
+  });
+
 // My orders
 export const listMyOrders = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
