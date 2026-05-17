@@ -84,27 +84,41 @@ function Checkout() {
 
         <Card className="mt-8 p-6">
           <Label className="text-sm font-semibold">Select bundle</Label>
-          <div className="mt-3 grid gap-2 sm:grid-cols-2">
-            {(bundles ?? []).map((b) => (
-              <button
-                key={b.id}
-                type="button"
-                onClick={() => setBundleId(b.id)}
-                className={`flex items-center justify-between rounded-xl border p-3 text-left transition ${bundleId === b.id ? "border-secondary bg-secondary/10" : "border-border hover:border-secondary/50"}`}
-              >
-                <div className="flex items-center gap-2">
-                  <span className="grid h-8 w-8 place-items-center rounded-lg" style={{ background: b.network_color ?? "#FFCC00" }}>
-                    <Zap className="h-4 w-4 text-foreground" />
-                  </span>
-                  <div>
-                    <div className="text-xs uppercase text-muted-foreground">{b.network_name}</div>
-                    <div className="text-sm font-semibold">{b.label}</div>
+          {(() => {
+            const groups = new Map<string, { name: string; color: string | null; items: typeof bundles }>();
+            for (const b of bundles ?? []) {
+              if (!groups.has(b.network_code)) groups.set(b.network_code, { name: b.network_name, color: b.network_color, items: [] as any });
+              groups.get(b.network_code)!.items!.push(b);
+            }
+            for (const g of groups.values()) g.items!.sort((a, b) => a.size_mb - b.size_mb);
+            return (
+              <div className="mt-3 space-y-5">
+                {Array.from(groups.entries()).map(([code, g]) => (
+                  <div key={code}>
+                    <div className="mb-2 flex items-center gap-2">
+                      <span className="grid h-6 w-6 place-items-center rounded-md" style={{ background: g.color ?? "#FFCC00" }}>
+                        <Zap className="h-3.5 w-3.5 text-foreground" />
+                      </span>
+                      <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{g.name}</div>
+                    </div>
+                    <div className="grid gap-2 sm:grid-cols-2">
+                      {g.items!.map((b) => (
+                        <button
+                          key={b.id}
+                          type="button"
+                          onClick={() => setBundleId(b.id)}
+                          className={`flex items-center justify-between rounded-xl border p-3 text-left transition ${bundleId === b.id ? "border-secondary bg-secondary/10" : "border-border hover:border-secondary/50"}`}
+                        >
+                          <div className="text-sm font-semibold">{b.label}</div>
+                          <div className="font-display text-base font-bold">GH₵{b.price.toFixed(2)}</div>
+                        </button>
+                      ))}
+                    </div>
                   </div>
-                </div>
-                <div className="font-display text-base font-bold">GH₵{b.price.toFixed(2)}</div>
-              </button>
-            ))}
-          </div>
+                ))}
+              </div>
+            );
+          })()}
 
           <div className="mt-6 grid gap-4">
             <div>

@@ -1,11 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { ArrowRight, Zap, ShieldCheck, Wallet, Store, Phone, Clock } from "lucide-react";
+import { ArrowRight, Zap, ShieldCheck, Wallet, Store, Phone, Clock, MessageCircle } from "lucide-react";
 import { SiteLayout } from "@/components/layout/SiteLayout";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { listPublicBundles } from "@/lib/bundles.functions";
+import { WHATSAPP_GROUP_URL } from "@/lib/contact";
 
 export const Route = createFileRoute("/")({
   component: Home,
@@ -22,9 +23,23 @@ function Home() {
     queryKey: ["public-bundles"],
     queryFn: () => listPublicBundles(),
   });
-  const popular = (bundles ?? [])
-    .filter((b) => b.network_code === "mtn")
-    .slice(0, 4);
+
+  // Quick Order: top bundle from each network so all networks are visible
+  const quick = (() => {
+    const groups = new Map<string, { code: string; name: string; color: string | null; items: typeof bundles }>();
+    for (const b of bundles ?? []) {
+      if (!groups.has(b.network_code)) groups.set(b.network_code, { code: b.network_code, name: b.network_name, color: b.network_color, items: [] as any });
+      groups.get(b.network_code)!.items!.push(b);
+    }
+    const out: NonNullable<typeof bundles> = [] as any;
+    for (const g of groups.values()) {
+      const sorted = g.items!.slice().sort((a, b) => a.size_mb - b.size_mb);
+      // Pick 1GB-ish (smallest >=1024MB), otherwise first
+      const pick = sorted.find((b) => b.size_mb >= 1024) ?? sorted[0];
+      if (pick) out.push(pick);
+    }
+    return out;
+  })();
 
   return (
     <SiteLayout>
@@ -64,12 +79,12 @@ function Home() {
                 <Badge variant="secondary">Live</Badge>
               </div>
               <div className="mt-5 space-y-3">
-                {popular.length === 0 && (
+                {quick.length === 0 && (
                   <div className="space-y-3">
-                    {[1,2,3,4].map((i) => <div key={i} className="h-14 rounded-xl bg-muted animate-pulse" />)}
+                    {[1,2,3].map((i) => <div key={i} className="h-14 rounded-xl bg-muted animate-pulse" />)}
                   </div>
                 )}
-                {popular.map((b) => (
+                {quick.map((b) => (
                   <Link
                     key={b.id}
                     to="/checkout"
@@ -112,7 +127,7 @@ function Home() {
         <div className="mt-12 grid gap-6 md:grid-cols-3">
           {[
             { icon: Zap, title: "Customer", desc: "Buy any bundle in seconds. Pay with MoMo or card. Track delivery live.", cta: "Buy data", to: "/bundles" },
-            { icon: Wallet, title: "Reseller — GH₵30", desc: "Top up a wallet, get reduced prices, place orders at wholesale rates.", cta: "Become a reseller", to: "/become-agent" },
+            { icon: Wallet, title: "Reseller — FREE", desc: "Sign up free, get reduced wholesale prices and a wallet for fast bulk orders.", cta: "Become a reseller", to: "/become-agent" },
             { icon: Store, title: "Agent — GH₵30", desc: "Your own store link, your own prices, lowest tier pricing. Run a real business.", cta: "Become an agent", to: "/become-agent" },
           ].map((b) => (
             <Card key={b.title} className="p-6">
@@ -148,6 +163,26 @@ function Home() {
             ))}
           </div>
         </div>
+      </section>
+
+      {/* WhatsApp community */}
+      <section className="mx-auto max-w-5xl px-4 pt-20 sm:px-6">
+        <Card className="overflow-hidden bg-secondary/10 p-8 sm:p-10">
+          <div className="grid items-center gap-6 md:grid-cols-[1fr_auto]">
+            <div className="flex items-start gap-4">
+              <span className="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-secondary text-secondary-foreground">
+                <MessageCircle className="h-6 w-6" />
+              </span>
+              <div>
+                <h3 className="font-display text-2xl font-bold">Join the WhatsApp community</h3>
+                <p className="mt-1 text-sm text-muted-foreground">Daily price drops, agent tips and instant support — straight in your DMs.</p>
+              </div>
+            </div>
+            <Button asChild size="lg" className="bg-secondary text-secondary-foreground hover:bg-secondary/90">
+              <a href={WHATSAPP_GROUP_URL} target="_blank" rel="noreferrer">Join group</a>
+            </Button>
+          </div>
+        </Card>
       </section>
 
       {/* CTA */}

@@ -1,8 +1,9 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { Menu, X, Zap } from "lucide-react";
+import { Menu, X, Zap, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
+import { WHATSAPP_GROUP_URL } from "@/lib/contact";
 
 export function Header() {
   const [open, setOpen] = useState(false);
@@ -15,7 +16,8 @@ export function Header() {
   const nav = [
     { to: "/", label: "Home" },
     { to: "/bundles", label: "Bundles" },
-    { to: "/become-agent", label: "Become an Agent" },
+    // Hide "Become an Agent" once the user is already an agent
+    ...(!isAgent ? [{ to: "/become-agent", label: "Become an Agent" }] : []),
     { to: "/about", label: "About" },
     { to: "/contact", label: "Contact" },
   ];
@@ -43,6 +45,14 @@ export function Header() {
               {n.label}
             </Link>
           ))}
+          <a
+            href={WHATSAPP_GROUP_URL}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center gap-1.5 rounded-full bg-secondary/15 px-3 py-1 text-sm font-medium text-secondary hover:bg-secondary/25"
+          >
+            <MessageCircle className="h-4 w-4" /> WhatsApp
+          </a>
         </nav>
 
         <div className="hidden items-center gap-2 md:flex">
@@ -96,6 +106,15 @@ export function Header() {
                 {n.label}
               </Link>
             ))}
+            <a
+              href={WHATSAPP_GROUP_URL}
+              target="_blank"
+              rel="noreferrer"
+              onClick={() => setOpen(false)}
+              className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-secondary hover:bg-muted"
+            >
+              <MessageCircle className="h-4 w-4" /> Join WhatsApp group
+            </a>
             <div className="mt-2 flex gap-2 border-t border-border pt-3">
               {user ? (
                 <>
