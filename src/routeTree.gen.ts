@@ -29,6 +29,7 @@ import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authentic
 import { Route as ApiPublicPaystackWebhookRouteImport } from './routes/api/public/paystack-webhook'
 import { Route as AuthenticatedDashboardWalletRouteImport } from './routes/_authenticated/dashboard_.wallet'
 import { Route as AuthenticatedDashboardStoreRouteImport } from './routes/_authenticated/dashboard_.store'
+import { Route as AuthenticatedDashboardProfileRouteImport } from './routes/_authenticated/dashboard_.profile'
 import { Route as AuthenticatedDashboardOrdersRouteImport } from './routes/_authenticated/dashboard_.orders'
 import { Route as AuthenticatedAdminUsersRouteImport } from './routes/_authenticated/admin/users'
 import { Route as AuthenticatedAdminPricingRouteImport } from './routes/_authenticated/admin/pricing'
@@ -138,6 +139,12 @@ const AuthenticatedDashboardStoreRoute =
     path: '/dashboard/store',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const AuthenticatedDashboardProfileRoute =
+  AuthenticatedDashboardProfileRouteImport.update({
+    id: '/dashboard_/profile',
+    path: '/dashboard/profile',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const AuthenticatedDashboardOrdersRoute =
   AuthenticatedDashboardOrdersRouteImport.update({
     id: '/dashboard_/orders',
@@ -196,6 +203,7 @@ export interface FileRoutesByFullPath {
   '/admin/pricing': typeof AuthenticatedAdminPricingRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
   '/dashboard/orders': typeof AuthenticatedDashboardOrdersRoute
+  '/dashboard/profile': typeof AuthenticatedDashboardProfileRoute
   '/dashboard/store': typeof AuthenticatedDashboardStoreRoute
   '/dashboard/wallet': typeof AuthenticatedDashboardWalletRoute
   '/api/public/paystack-webhook': typeof ApiPublicPaystackWebhookRoute
@@ -222,6 +230,7 @@ export interface FileRoutesByTo {
   '/admin/pricing': typeof AuthenticatedAdminPricingRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
   '/dashboard/orders': typeof AuthenticatedDashboardOrdersRoute
+  '/dashboard/profile': typeof AuthenticatedDashboardProfileRoute
   '/dashboard/store': typeof AuthenticatedDashboardStoreRoute
   '/dashboard/wallet': typeof AuthenticatedDashboardWalletRoute
   '/api/public/paystack-webhook': typeof ApiPublicPaystackWebhookRoute
@@ -251,6 +260,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/pricing': typeof AuthenticatedAdminPricingRoute
   '/_authenticated/admin/users': typeof AuthenticatedAdminUsersRoute
   '/_authenticated/dashboard_/orders': typeof AuthenticatedDashboardOrdersRoute
+  '/_authenticated/dashboard_/profile': typeof AuthenticatedDashboardProfileRoute
   '/_authenticated/dashboard_/store': typeof AuthenticatedDashboardStoreRoute
   '/_authenticated/dashboard_/wallet': typeof AuthenticatedDashboardWalletRoute
   '/api/public/paystack-webhook': typeof ApiPublicPaystackWebhookRoute
@@ -280,6 +290,7 @@ export interface FileRouteTypes {
     | '/admin/pricing'
     | '/admin/users'
     | '/dashboard/orders'
+    | '/dashboard/profile'
     | '/dashboard/store'
     | '/dashboard/wallet'
     | '/api/public/paystack-webhook'
@@ -306,6 +317,7 @@ export interface FileRouteTypes {
     | '/admin/pricing'
     | '/admin/users'
     | '/dashboard/orders'
+    | '/dashboard/profile'
     | '/dashboard/store'
     | '/dashboard/wallet'
     | '/api/public/paystack-webhook'
@@ -334,6 +346,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/pricing'
     | '/_authenticated/admin/users'
     | '/_authenticated/dashboard_/orders'
+    | '/_authenticated/dashboard_/profile'
     | '/_authenticated/dashboard_/store'
     | '/_authenticated/dashboard_/wallet'
     | '/api/public/paystack-webhook'
@@ -499,6 +512,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardStoreRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/dashboard_/profile': {
+      id: '/_authenticated/dashboard_/profile'
+      path: '/dashboard/profile'
+      fullPath: '/dashboard/profile'
+      preLoaderRoute: typeof AuthenticatedDashboardProfileRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/dashboard_/orders': {
       id: '/_authenticated/dashboard_/orders'
       path: '/dashboard/orders'
@@ -570,6 +590,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRouteWithChildren
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedDashboardOrdersRoute: typeof AuthenticatedDashboardOrdersRoute
+  AuthenticatedDashboardProfileRoute: typeof AuthenticatedDashboardProfileRoute
   AuthenticatedDashboardStoreRoute: typeof AuthenticatedDashboardStoreRoute
   AuthenticatedDashboardWalletRoute: typeof AuthenticatedDashboardWalletRoute
 }
@@ -579,6 +600,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedAdminRoute: AuthenticatedAdminRouteWithChildren,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedDashboardOrdersRoute: AuthenticatedDashboardOrdersRoute,
+  AuthenticatedDashboardProfileRoute: AuthenticatedDashboardProfileRoute,
   AuthenticatedDashboardStoreRoute: AuthenticatedDashboardStoreRoute,
   AuthenticatedDashboardWalletRoute: AuthenticatedDashboardWalletRoute,
 }
@@ -606,13 +628,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

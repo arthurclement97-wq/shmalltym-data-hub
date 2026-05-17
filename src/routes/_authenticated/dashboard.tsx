@@ -1,6 +1,6 @@
 import { createFileRoute, Link, Outlet } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { Wallet, Store, ListOrdered, ShoppingBag } from "lucide-react";
+import { Wallet, Store, ListOrdered, ShoppingBag, UserCog } from "lucide-react";
 import { SiteLayout } from "@/components/layout/SiteLayout";
 import { Card } from "@/components/ui/card";
 import { getMyProfile } from "@/lib/profile.functions";
@@ -39,6 +39,11 @@ function Dashboard() {
             <div className="font-display text-lg font-semibold">My orders</div>
             <Link to="/dashboard/orders" className="mt-3 inline-block text-sm font-semibold text-secondary hover:underline">View all →</Link>
           </Card>
+          <Card className="p-6">
+            <UserCog className="h-6 w-6 text-secondary" />
+            <div className="mt-3 text-xs uppercase text-muted-foreground">Account</div>
+            <div className="font-display text-lg font-semibold">My profile</div>
+            <Link to="/dashboard/profile" className="mt-3 inline-block text-sm font-semibold text-secondary hover:underline">Edit profile, email & password →</Link>
           {isAgent && (
             <Card className="p-6">
               <Store className="h-6 w-6 text-secondary" />
