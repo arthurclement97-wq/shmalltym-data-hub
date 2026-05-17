@@ -79,7 +79,7 @@ function BecomeAgent() {
           <Tabs value={tab} onValueChange={(v) => setTab(v as any)}>
             <TabsList>
               <TabsTrigger value="agent">Agent — GH₵30</TabsTrigger>
-              <TabsTrigger value="reseller">Reseller — GH₵30</TabsTrigger>
+              <TabsTrigger value="reseller">Reseller — FREE</TabsTrigger>
             </TabsList>
             <TabsContent value="agent" className="mt-4 space-y-4">
               <div>
@@ -99,18 +99,28 @@ function BecomeAgent() {
               </div>
             </TabsContent>
             <TabsContent value="reseller" className="mt-4">
-              <p className="text-sm text-muted-foreground">Resellers get reduced prices on all bundles and a wallet to place bulk orders quickly. No public storefront.</p>
+              <p className="text-sm text-muted-foreground">Reselling is <strong>free for every customer</strong>. You get reduced prices on all bundles and a wallet to place bulk orders quickly. No public storefront.</p>
             </TabsContent>
           </Tabs>
 
           <ul className="mt-6 space-y-2 text-sm text-muted-foreground">
-            <li className="flex items-center gap-2"><Check className="h-4 w-4 text-secondary" /> One‑time GH₵30 signup fee</li>
-            <li className="flex items-center gap-2"><Check className="h-4 w-4 text-secondary" /> Pay via MoMo or card (Paystack)</li>
-            <li className="flex items-center gap-2"><Check className="h-4 w-4 text-secondary" /> Reduced wholesale data prices</li>
+            {tab === "agent" ? (
+              <>
+                <li className="flex items-center gap-2"><Check className="h-4 w-4 text-secondary" /> One‑time GH₵30 signup fee</li>
+                <li className="flex items-center gap-2"><Check className="h-4 w-4 text-secondary" /> Pay via MoMo or card (Paystack)</li>
+                <li className="flex items-center gap-2"><Check className="h-4 w-4 text-secondary" /> Your own storefront + custom prices</li>
+              </>
+            ) : (
+              <>
+                <li className="flex items-center gap-2"><Check className="h-4 w-4 text-secondary" /> 100% free — no signup fee</li>
+                <li className="flex items-center gap-2"><Check className="h-4 w-4 text-secondary" /> Reduced wholesale data prices</li>
+                <li className="flex items-center gap-2"><Check className="h-4 w-4 text-secondary" /> Wallet for fast bulk orders</li>
+              </>
+            )}
           </ul>
 
           <Button size="lg" className="mt-6 w-full" disabled={busy} onClick={go}>
-            {busy ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Starting…</> : `Pay GH₵30 & become a ${tab}`}
+            {busy ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Starting…</> : tab === "agent" ? "Pay GH₵30 & become an agent" : "Activate free reseller account"}
           </Button>
           {!user && (
             <p className="mt-2 text-center text-xs text-muted-foreground">
