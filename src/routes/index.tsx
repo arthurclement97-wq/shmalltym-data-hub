@@ -127,7 +127,7 @@ function Home() {
         <div className="mt-12 grid gap-6 md:grid-cols-3">
           {[
             { icon: Zap, title: "Customer", desc: "Buy any bundle in seconds. Pay with MoMo or card. Track delivery live.", cta: "Buy data", to: "/bundles" },
-            { icon: Wallet, title: "Reseller — GH₵30", desc: "Top up a wallet, get reduced prices, place orders at wholesale rates.", cta: "Become a reseller", to: "/become-agent" },
+            { icon: Wallet, title: "Reseller — FREE", desc: "Sign up free, get reduced wholesale prices and a wallet for fast bulk orders.", cta: "Become a reseller", to: "/become-agent" },
             { icon: Store, title: "Agent — GH₵30", desc: "Your own store link, your own prices, lowest tier pricing. Run a real business.", cta: "Become an agent", to: "/become-agent" },
           ].map((b) => (
             <Card key={b.title} className="p-6">
@@ -163,6 +163,26 @@ function Home() {
             ))}
           </div>
         </div>
+      </section>
+
+      {/* WhatsApp community */}
+      <section className="mx-auto max-w-5xl px-4 pt-20 sm:px-6">
+        <Card className="overflow-hidden bg-secondary/10 p-8 sm:p-10">
+          <div className="grid items-center gap-6 md:grid-cols-[1fr_auto]">
+            <div className="flex items-start gap-4">
+              <span className="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-secondary text-secondary-foreground">
+                <MessageCircle className="h-6 w-6" />
+              </span>
+              <div>
+                <h3 className="font-display text-2xl font-bold">Join the WhatsApp community</h3>
+                <p className="mt-1 text-sm text-muted-foreground">Daily price drops, agent tips and instant support — straight in your DMs.</p>
+              </div>
+            </div>
+            <Button asChild size="lg" className="bg-secondary text-secondary-foreground hover:bg-secondary/90">
+              <a href={WHATSAPP_GROUP_URL} target="_blank" rel="noreferrer">Join group</a>
+            </Button>
+          </div>
+        </Card>
       </section>
 
       {/* CTA */}
