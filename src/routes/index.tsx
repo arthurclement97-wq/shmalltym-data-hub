@@ -79,12 +79,12 @@ function Home() {
                 <Badge variant="secondary">Live</Badge>
               </div>
               <div className="mt-5 space-y-3">
-                {popular.length === 0 && (
+                {quick.length === 0 && (
                   <div className="space-y-3">
-                    {[1,2,3,4].map((i) => <div key={i} className="h-14 rounded-xl bg-muted animate-pulse" />)}
+                    {[1,2,3].map((i) => <div key={i} className="h-14 rounded-xl bg-muted animate-pulse" />)}
                   </div>
                 )}
-                {popular.map((b) => (
+                {quick.map((b) => (
                   <Link
                     key={b.id}
                     to="/checkout"
