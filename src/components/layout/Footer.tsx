@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
-import { Mail, Phone, Zap } from "lucide-react";
+import { Mail, Phone, Zap, MessageCircle } from "lucide-react";
+import { WHATSAPP_DM_URL, WHATSAPP_GROUP_URL } from "@/lib/contact";
 
 export function Footer() {
   return (
@@ -40,6 +41,8 @@ export function Footer() {
           <ul className="mt-4 space-y-2 text-sm text-primary-foreground/80">
             <li className="flex items-center gap-2"><Phone className="h-4 w-4" /> <a href="tel:0257992603">0257 992 603</a></li>
             <li className="flex items-center gap-2"><Mail className="h-4 w-4" /> <a href="mailto:shmalltym17@gmail.com">shmalltym17@gmail.com</a></li>
+            <li className="flex items-center gap-2"><MessageCircle className="h-4 w-4" /> <a href={WHATSAPP_DM_URL} target="_blank" rel="noreferrer">Chat on WhatsApp</a></li>
+            <li className="flex items-center gap-2"><MessageCircle className="h-4 w-4" /> <a href={WHATSAPP_GROUP_URL} target="_blank" rel="noreferrer">Join WhatsApp group</a></li>
           </ul>
         </div>
       </div>
