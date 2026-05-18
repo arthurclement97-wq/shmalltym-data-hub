@@ -29,6 +29,7 @@ function AdminGate() {
             { to: "/admin/bundles", label: "Bundles" },
             { to: "/admin/pricing", label: "Pricing" },
             { to: "/admin/payments", label: "Payments" },
+            { to: "/admin/settings", label: "Settings" },
           ].map((n) => (
             <Link key={n.to} to={n.to} className="whitespace-nowrap rounded-md px-3 py-1.5 font-medium text-muted-foreground hover:bg-background hover:text-foreground" activeOptions={{ exact: n.to === "/admin" }} activeProps={{ className: "bg-background text-foreground shadow" }}>
               {n.label}

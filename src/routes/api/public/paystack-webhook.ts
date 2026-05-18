@@ -45,6 +45,14 @@ export const Route = createFileRoute("/api/public/paystack-webhook")({
           if (!order || order.status === "paid" || order.status === "completed") return new Response("ok");
           await supabaseAdmin.from("orders").update({ status: "paid", paid_at: new Date().toISOString(), paystack_reference: reference }).eq("id", orderId);
           await supabaseAdmin.from("order_events").insert({ order_id: orderId, status: "paid", note: "Payment confirmed via Paystack" });
+        } else if (kind === "cart") {
+          const orderIds: string[] = Array.isArray(meta.order_ids) ? meta.order_ids : [];
+          for (const id of orderIds) {
+            const { data: o } = await supabaseAdmin.from("orders").select("status").eq("id", id).maybeSingle();
+            if (!o || o.status === "paid" || o.status === "completed") continue;
+            await supabaseAdmin.from("orders").update({ status: "paid", paid_at: new Date().toISOString(), paystack_reference: reference }).eq("id", id);
+            await supabaseAdmin.from("order_events").insert({ order_id: id, status: "paid", note: "Cart payment confirmed via Paystack" });
+          }
         } else if (kind === "wallet_topup") {
           const userId: string | undefined = meta.user_id;
           if (!userId) return new Response("ok");

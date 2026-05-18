@@ -211,6 +211,175 @@ export const initAgentSignup = createServerFn({ method: "POST" })
     return { authorization_url: init.authorization_url, reference };
   });
 
+// Multi-bundle cart checkout — guest
+export const initCartPayment = createServerFn({ method: "POST" })
+  .inputValidator((d) => z.object({
+    bundleIds: z.array(z.string().uuid()).min(1).max(20),
+    recipientPhone: z.string().trim().min(7).max(20).regex(/^[0-9+ ]+$/),
+    customerName: z.string().trim().min(1).max(120).optional(),
+    customerEmail: z.string().email().max(255).optional(),
+    agentSlug: z.string().trim().min(1).max(64).optional(),
+  }).parse(d))
+  .handler(async ({ data }) => {
+    const { data: bundles } = await supabaseAdmin.from("bundles").select("*").in("id", data.bundleIds);
+    if (!bundles || bundles.length === 0) throw new Error("No valid bundles");
+    const { data: networks } = await supabaseAdmin.from("networks").select("*");
+    const netMap = new Map((networks ?? []).map((n) => [n.id, n]));
+
+    let agentId: string | null = null;
+    let agentPrices = new Map<string, number>();
+    if (data.agentSlug) {
+      const { data: prof } = await supabaseAdmin.from("profiles").select("id").eq("agent_slug", data.agentSlug).maybeSingle();
+      if (prof) {
+        agentId = prof.id;
+        const { data: ap } = await supabaseAdmin.from("agent_prices").select("bundle_id, retail_price")
+          .eq("agent_id", agentId).eq("active", true).in("bundle_id", data.bundleIds);
+        for (const r of ap ?? []) agentPrices.set(r.bundle_id, Number(r.retail_price));
+      }
+    }
+
+    const reference = newRef("crt");
+    const orderIds: string[] = [];
+    let total = 0;
+    for (const b of bundles) {
+      const net = netMap.get(b.network_id);
+      if (!net || !b.active) continue;
+      const price = agentPrices.get(b.id) ?? Number(b.base_price);
+      total += price;
+      const { data: order, error } = await supabaseAdmin.from("orders").insert({
+        user_id: null,
+        agent_id: agentId,
+        customer_email: data.customerEmail ?? null,
+        customer_name: data.customerName ?? null,
+        recipient_phone: data.recipientPhone,
+        bundle_id: b.id,
+        network_code: net.code,
+        bundle_label: b.label,
+        amount: price,
+        payment_method: "paystack",
+        status: "pending",
+        paystack_reference: reference,
+      }).select().single();
+      if (error) throw new Error(error.message);
+      orderIds.push(order.id);
+      await supabaseAdmin.from("order_events").insert({ order_id: order.id, status: "pending", note: "Cart order created, awaiting payment" });
+    }
+    if (orderIds.length === 0) throw new Error("No active bundles in cart");
+
+    const origin = originFromReq();
+    const init = await paystackInit({
+      email: data.customerEmail || "guest@shmalltym.app",
+      amount: total,
+      reference,
+      callback_url: `${origin}/track/${orderIds[0]}`,
+      metadata: { kind: "cart", order_ids: orderIds, agent_id: agentId },
+    });
+    return { authorization_url: init.authorization_url, orderIds, reference, total };
+  });
+
+// Multi-bundle cart checkout — authenticated (paystack or wallet)
+export const initCartPaymentAuth = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) => z.object({
+    bundleIds: z.array(z.string().uuid()).min(1).max(20),
+    recipientPhone: z.string().trim().min(7).max(20).regex(/^[0-9+ ]+$/),
+    method: z.enum(["paystack", "wallet"]).default("paystack"),
+  }).parse(d))
+  .handler(async ({ data, context }) => {
+    const { data: bundles } = await supabaseAdmin.from("bundles").select("*").in("id", data.bundleIds);
+    if (!bundles || bundles.length === 0) throw new Error("No valid bundles");
+    const { data: networks } = await supabaseAdmin.from("networks").select("*");
+    const netMap = new Map((networks ?? []).map((n) => [n.id, n]));
+    const [{ data: pos }, { data: roles }, { data: profile }] = await Promise.all([
+      supabaseAdmin.from("price_overrides").select("bundle_id, price").eq("user_id", context.userId).in("bundle_id", data.bundleIds),
+      supabaseAdmin.from("user_roles").select("role").eq("user_id", context.userId),
+      supabaseAdmin.from("profiles").select("*").eq("id", context.userId).maybeSingle(),
+    ]);
+    const overrides = new Map((pos ?? []).map((p) => [p.bundle_id, Number(p.price)]));
+    const userRoles = (roles ?? []).map((r) => r.role);
+
+    const reference = newRef("crt");
+    const orderIds: string[] = [];
+    let total = 0;
+    const items: Array<{ id: string; price: number; label: string; code: string }> = [];
+    for (const b of bundles) {
+      const net = netMap.get(b.network_id);
+      if (!net || !b.active) continue;
+      let price = Number(b.base_price);
+      if (overrides.has(b.id)) price = overrides.get(b.id)!;
+      else if (userRoles.includes("agent") && b.agent_price != null) price = Number(b.agent_price);
+      else if (userRoles.includes("reseller") && b.reseller_price != null) price = Number(b.reseller_price);
+      total += price;
+      const { data: order, error } = await supabaseAdmin.from("orders").insert({
+        user_id: context.userId,
+        customer_email: profile?.email ?? null,
+        customer_name: profile?.full_name ?? null,
+        recipient_phone: data.recipientPhone,
+        bundle_id: b.id,
+        network_code: net.code,
+        bundle_label: b.label,
+        amount: price,
+        payment_method: data.method,
+        status: "pending",
+        paystack_reference: data.method === "paystack" ? reference : null,
+      }).select().single();
+      if (error) throw new Error(error.message);
+      orderIds.push(order.id);
+      items.push({ id: order.id, price, label: b.label, code: net.code });
+      await supabaseAdmin.from("order_events").insert({ order_id: order.id, status: "pending", note: `Cart order created (${data.method})` });
+    }
+    if (orderIds.length === 0) throw new Error("No active bundles in cart");
+
+    if (data.method === "wallet") {
+      const balance = Number(profile?.wallet_balance ?? 0);
+      if (balance < total) {
+        for (const id of orderIds) {
+          await supabaseAdmin.from("orders").update({ status: "cancelled", cancelled_at: new Date().toISOString() }).eq("id", id);
+          await supabaseAdmin.from("order_events").insert({ order_id: id, status: "cancelled", note: "Insufficient wallet balance" });
+        }
+        throw new Error("Insufficient wallet balance. Please top up.");
+      }
+      const newBalance = balance - total;
+      await supabaseAdmin.from("profiles").update({ wallet_balance: newBalance }).eq("id", context.userId);
+      await supabaseAdmin.from("wallet_transactions").insert({
+        user_id: context.userId, type: "spend", amount: -total, balance_after: newBalance,
+        note: `Cart payment (${orderIds.length} items)`,
+      });
+      for (const it of items) {
+        await supabaseAdmin.from("orders").update({ status: "paid", paid_at: new Date().toISOString() }).eq("id", it.id);
+        await supabaseAdmin.from("order_events").insert({ order_id: it.id, status: "paid", note: "Paid from wallet" });
+      }
+      return { orderIds, paid: true, total };
+    }
+
+    const origin = originFromReq();
+    const init = await paystackInit({
+      email: profile?.email || "user@shmalltym.app",
+      amount: total,
+      reference,
+      callback_url: `${origin}/track/${orderIds[0]}`,
+      metadata: { kind: "cart", order_ids: orderIds, user_id: context.userId },
+    });
+    return { authorization_url: init.authorization_url, orderIds, reference, total, paid: false };
+  });
+
+// Resolve bundles by ids (public, for cart checkout display)
+export const getBundlesByIds = createServerFn({ method: "POST" })
+  .inputValidator((d) => z.object({ ids: z.array(z.string().uuid()).min(1).max(20) }).parse(d))
+  .handler(async ({ data }) => {
+    const { data: bundles } = await supabaseAdmin
+      .from("bundles")
+      .select("id, label, base_price, network_id, size_mb, active")
+      .in("id", data.ids);
+    const { data: networks } = await supabaseAdmin.from("networks").select("id, code, name");
+    const netMap = new Map((networks ?? []).map((n) => [n.id, n]));
+    return (bundles ?? []).filter((b) => b.active).map((b) => ({
+      id: b.id, label: b.label, price: Number(b.base_price),
+      network_code: netMap.get(b.network_id)?.code || "",
+      network_name: netMap.get(b.network_id)?.name || "",
+    }));
+  });
+
 // Order tracking (public — track by id, returns minimal info)
 export const getOrderTracking = createServerFn({ method: "GET" })
   .inputValidator((d) => z.object({ orderId: z.string().uuid() }).parse(d))
