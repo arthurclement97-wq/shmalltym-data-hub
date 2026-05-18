@@ -1,13 +1,15 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
-import { Zap, Search } from "lucide-react";
+import { Zap, Search, ShoppingCart, Check } from "lucide-react";
+import { toast } from "sonner";
 import { SiteLayout } from "@/components/layout/SiteLayout";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { listPublicBundles, listMyBundles } from "@/lib/bundles.functions";
 import { useAuth } from "@/hooks/use-auth";
+import { useCart } from "@/lib/cart";
 
 export const Route = createFileRoute("/bundles")({
   component: Bundles,
@@ -21,10 +23,12 @@ export const Route = createFileRoute("/bundles")({
 
 function Bundles() {
   const { user } = useAuth();
+  const { items: cartItems, add: addToCart } = useCart();
   const { data: bundles } = useQuery({
     queryKey: ["bundles", user?.id ?? "public"],
     queryFn: () => (user ? listMyBundles() : listPublicBundles()),
   });
+  const inCart = (id: string) => cartItems.some((c) => c.bundleId === id);
   const [net, setNet] = useState<string>("all");
   const [q, setQ] = useState("");
 
@@ -97,9 +101,23 @@ function Bundles() {
                         <div className="text-xs text-muted-foreground line-through">GH₵{b.base_price.toFixed(2)}</div>
                       )}
                     </div>
-                    <Button asChild className="mt-5">
-                      <Link to="/checkout" search={{ bundle: b.id }}>Buy now</Link>
-                    </Button>
+                    <div className="mt-5 flex gap-2">
+                      <Button asChild className="flex-1">
+                        <Link to="/checkout" search={{ bundle: b.id }}>Buy now</Link>
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        aria-label="Add to cart"
+                        disabled={inCart(b.id)}
+                        onClick={() => {
+                          addToCart({ bundleId: b.id, label: b.label, network: b.network_name, price: b.price });
+                          toast.success(`${b.label} added to cart`);
+                        }}
+                      >
+                        {inCart(b.id) ? <Check className="h-4 w-4" /> : <ShoppingCart className="h-4 w-4" />}
+                      </Button>
+                    </div>
                   </Card>
                 ))}
               </div>
