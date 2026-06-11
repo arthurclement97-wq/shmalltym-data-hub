@@ -10,6 +10,7 @@ export const getSiteSettings = createServerFn({ method: "GET" }).handler(async (
   return {
     whatsapp_dm_url: map.whatsapp_dm_url || "https://wa.me/233257992603",
     whatsapp_group_url: map.whatsapp_group_url || "https://chat.whatsapp.com/",
+    paystack_enabled: map.paystack_enabled || "true",
   };
 });
 
